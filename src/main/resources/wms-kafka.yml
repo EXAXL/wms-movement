@@ -1,0 +1,11 @@
+wms:
+  kafka:
+    topics:
+      movements: ${KAFKA_MOVEMENT_TOPIC}
+    retry:
+      attempts: ${KAFKA_RETRY_TOPIC_ATTEMPTS}
+      initial-delay: ${KAFKA_RETRY_TOPIC_BACKOFF_DELAY}
+      multiplier: ${KAFKA_RETRY_TOPIC_BACKOFF_MULTIPLIER}
+      max-delay: ${KAFKA_RETRY_TOPIC_BACKOFF_MAX_DELAY}
+    dlt:
+      topic-suffix: ${KAFKA_DLT_TOPIC_SUFFIX}

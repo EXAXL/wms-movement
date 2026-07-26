@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: wms-movement
+  profiles:
+    active: dev #${SPRING_PROFILE_ACTIVE}
+  config:
+    import: "wms-kafka.yml"
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: wms-movement
+      auto-offset-reset: earliest
+      client-id: ${POD_NAME:local}
+
+logging:
+  level:
+    org.apache.kafka: INFO
+    org.springframework.kafka: INFO
+      
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: ${MANAGEMENT_OTLP_METRIC_EXPORT_ACTIVE}
+  tracing:
+    enabled: ${MANAGEMENT_OTLP_TRACING_ACTIVE}
