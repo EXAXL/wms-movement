@@ -50,9 +50,9 @@ public class WmsDeadLetterPublishingRecoverer extends DeadLetterPublishingRecove
 			if (!Boolean.parseBoolean(new String(header.value()))) {
 				// remove kafka default headers
 				Stream.of(headers.toArray())
-						.filter(h -> h.key().equalsIgnoreCase(RetryTopicHeaders.DEFAULT_HEADER_ATTEMPTS)
-								|| h.key().equalsIgnoreCase(RetryTopicHeaders.DEFAULT_HEADER_BACKOFF_TIMESTAMP)
-								|| h.key().equalsIgnoreCase(RetryTopicHeaders.DEFAULT_HEADER_ORIGINAL_TIMESTAMP))
+						.filter(h -> RetryTopicHeaders.DEFAULT_HEADER_ATTEMPTS.equalsIgnoreCase(h.key())
+								|| RetryTopicHeaders.DEFAULT_HEADER_BACKOFF_TIMESTAMP.equalsIgnoreCase(h.key())
+								|| RetryTopicHeaders.DEFAULT_HEADER_ORIGINAL_TIMESTAMP.equalsIgnoreCase(h.key()))
 						.forEach(h -> headers.remove(h.key()));
 			}
 		}
