@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.header.internals.RecordHeaders;
@@ -27,8 +28,8 @@ class WmsDeadLetterPublishingRecovererTest {
 	private final KafkaOperations<?, ?> kafkaOperations = Mockito.mock(KafkaOperations.class);
 
 	private final WmsDeadLetterPublishingRecoverer service = new WmsDeadLetterPublishingRecoverer(
-			record -> kafkaOperations,
-			(record, ex) -> new TopicPartition(TOPIC, 0));
+			consumerRecord -> kafkaOperations,
+			(consumerRecord, ex) -> new TopicPartition(TOPIC, 0));
 
 	@Test
 	void createProducerRecord_WhenNoCustomHeaders_ThenKafkaHeadersAreNotRemoved() {
@@ -39,7 +40,7 @@ class WmsDeadLetterPublishingRecovererTest {
 		ProducerRecord<Object, Object> result = service.createProducerRecord(
 				consumerRecord, new TopicPartition(TOPIC, 0), headers, null, "payload".getBytes());
 
-		List<String> headerKeys = Arrays.stream(result.headers().toArray()).map(h -> h.key()).toList();
+		List<String> headerKeys = Arrays.stream(result.headers().toArray()).map(Header::key).toList();
 		assertThat(headerKeys).contains(KafkaHeaders.PREFIX + "some-header");
 	}
 
@@ -54,7 +55,7 @@ class WmsDeadLetterPublishingRecovererTest {
 		ProducerRecord<Object, Object> result = service.createProducerRecord(
 				consumerRecord, new TopicPartition(TOPIC, 0), headers, null, "payload".getBytes());
 
-		List<String> headerKeys = Arrays.stream(result.headers().toArray()).map(h -> h.key()).toList();
+		List<String> headerKeys = Arrays.stream(result.headers().toArray()).map(Header::key).toList();
 		assertThat(headerKeys).contains(KafkaHeaders.PREFIX + "some-header");
 	}
 
@@ -69,8 +70,8 @@ class WmsDeadLetterPublishingRecovererTest {
 		ProducerRecord<Object, Object> result = service.createProducerRecord(
 				consumerRecord, new TopicPartition(TOPIC, 0), headers, null, "payload".getBytes());
 
-		List<String> headerKeys = Arrays.stream(result.headers().toArray()).map(h -> h.key()).toList();
-		assertThat(headerKeys).doesNotContain(KafkaHeaders.PREFIX + "some-header");
+		List<String> headerKeys = Arrays.stream(result.headers().toArray()).map(Header::key).toList();
+		assertThat(headerKeys).isNotEmpty().doesNotContain(KafkaHeaders.PREFIX + "some-header");
 	}
 
 	@Test
@@ -83,7 +84,7 @@ class WmsDeadLetterPublishingRecovererTest {
 		ProducerRecord<Object, Object> result = service.createProducerRecord(
 				consumerRecord, new TopicPartition(TOPIC, 0), headers, null, "payload".getBytes());
 
-		List<String> headerKeys = Arrays.stream(result.headers().toArray()).map(h -> h.key()).toList();
+		List<String> headerKeys = Arrays.stream(result.headers().toArray()).map(Header::key).toList();
 		assertThat(headerKeys).contains(RetryTopicHeaders.DEFAULT_HEADER_ATTEMPTS);
 	}
 
@@ -99,8 +100,8 @@ class WmsDeadLetterPublishingRecovererTest {
 		ProducerRecord<Object, Object> result = service.createProducerRecord(
 				consumerRecord, new TopicPartition(TOPIC, 0), headers, null, "payload".getBytes());
 
-		List<String> headerKeys = Arrays.stream(result.headers().toArray()).map(h -> h.key()).toList();
-		assertThat(headerKeys).doesNotContain(
+		List<String> headerKeys = Arrays.stream(result.headers().toArray()).map(Header::key).toList();
+		assertThat(headerKeys).isNotEmpty().doesNotContain(
 				RetryTopicHeaders.DEFAULT_HEADER_ATTEMPTS,
 				RetryTopicHeaders.DEFAULT_HEADER_BACKOFF_TIMESTAMP,
 				RetryTopicHeaders.DEFAULT_HEADER_ORIGINAL_TIMESTAMP);
