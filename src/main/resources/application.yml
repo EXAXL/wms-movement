@@ -2,7 +2,7 @@ spring:
   application:
     name: wms-movement
   profiles:
-    active: dev #${SPRING_PROFILE_ACTIVE}
+    active: ${SPRING_PROFILE_ACTIVE}
   config:
     import: "wms-kafka.yml"
   kafka:
@@ -11,6 +11,7 @@ spring:
       group-id: wms-movement
       auto-offset-reset: earliest
       client-id: ${POD_NAME:local}
+      enable-auto-commit: false
 
 logging:
   level:
