@@ -12,6 +12,8 @@ spring:
       auto-offset-reset: earliest
       client-id: ${POD_NAME:local}
       enable-auto-commit: false
+    listener:
+      ack-mode: record
 
 logging:
   level:
